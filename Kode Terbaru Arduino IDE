@@ -1,0 +1,41 @@
+#define RELAY_PIN 23
+#define SENSOR_PIN 34
+
+int nilaiSensor;
+int kelembapan;
+
+// batas
+int batasBawah = 30;
+int batasAtas  = 60;
+
+bool pompaNyala = false;
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, HIGH); // default mati
+}
+
+void loop() {
+  nilaiSensor = analogRead(SENSOR_PIN);
+
+  kelembapan = map(nilaiSensor, 4095, 1500, 0, 100);
+
+  Serial.print("Kelembapan: ");
+  Serial.print(kelembapan);
+  Serial.println("%");
+
+  if (kelembapan <= batasBawah && !pompaNyala) {
+    digitalWrite(RELAY_PIN, LOW); // nyala
+    pompaNyala = true;
+    Serial.println("Pompa NYALA");
+  }
+
+  else if (kelembapan >= batasAtas && pompaNyala) {
+    digitalWrite(RELAY_PIN, HIGH); // mati
+    pompaNyala = false;
+    Serial.println("Pompa MATI");
+  }
+
+  delay(2000);
+}
